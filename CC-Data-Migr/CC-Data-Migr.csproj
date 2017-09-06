@@ -32,8 +32,23 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="MySql.Data, Version=6.9.9.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <HintPath>..\packages\MySql.Data.6.9.9\lib\net45\MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="MySql.Data.Entity.EF6, Version=6.9.9.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <HintPath>..\packages\MySql.Data.Entity.6.9.9\lib\net45\MySql.Data.Entity.EF6.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -42,11 +57,74 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\ccinput\C1attendance.cs" />
+    <Compile Include="Models\ccinput\C1biometrics.cs" />
+    <Compile Include="Models\ccinput\C1bookings.cs" />
+    <Compile Include="Models\ccinput\C1caldat.cs" />
+    <Compile Include="Models\ccinput\C1client.cs" />
+    <Compile Include="Models\ccinput\C1clientcasedocs.cs" />
+    <Compile Include="Models\ccinput\C1clientcaseheader.cs" />
+    <Compile Include="Models\ccinput\C1clientcaseservice.cs" />
+    <Compile Include="Models\ccinput\C1clientcaseservicedetail.cs" />
+    <Compile Include="Models\ccinput\C1clientneedscat.cs" />
+    <Compile Include="Models\ccinput\C1clientneedsdetail.cs" />
+    <Compile Include="Models\ccinput\C1clientneedsdocs.cs" />
+    <Compile Include="Models\ccinput\C1clientneedsheader.cs" />
+    <Compile Include="Models\ccinput\C1funders.cs" />
+    <Compile Include="Models\ccinput\C1journeycat.cs" />
+    <Compile Include="Models\ccinput\C1journeys.cs" />
+    <Compile Include="Models\ccinput\C1locations.cs" />
+    <Compile Include="Models\ccinput\C1qccom.cs" />
+    <Compile Include="Models\ccinput\C1qccomtype.cs" />
+    <Compile Include="Models\ccinput\C1qcsr.cs" />
+    <Compile Include="Models\ccinput\C1qcsrtype.cs" />
+    <Compile Include="Models\ccinput\C1resources.cs" />
+    <Compile Include="Models\ccinput\C1resourcetypes.cs" />
+    <Compile Include="Models\ccinput\C1schedules.cs" />
+    <Compile Include="Models\ccinput\C1schedulesorig.cs" />
+    <Compile Include="Models\ccinput\C1service.cs" />
+    <Compile Include="Models\ccinput\C1servicetypes.cs" />
+    <Compile Include="Models\ccinput\C1surressca.cs" />
+    <Compile Include="Models\ccinput\C1surrestxt.cs" />
+    <Compile Include="Models\ccinput\C1surveys.cs" />
+    <Compile Include="Models\ccinput\C1surveysq.cs" />
+    <Compile Include="Models\ccinput\ccinput.cs" />
+    <Compile Include="Models\ccinput\citylist.cs" />
+    <Compile Include="Models\ccinput\county.cs" />
+    <Compile Include="Models\ccinput\countylist.cs" />
+    <Compile Include="Models\ccinput\cpdate.cs" />
+    <Compile Include="Models\ccinput\customer.cs" />
+    <Compile Include="Models\ccinput\district.cs" />
+    <Compile Include="Models\ccinput\nhspansha.cs" />
+    <Compile Include="Models\ccinput\nhssha.cs" />
+    <Compile Include="Models\ccinput\postcode.cs" />
+    <Compile Include="Models\ccinput\refdata.cs" />
+    <Compile Include="Models\ccinput\refdatatype.cs" />
+    <Compile Include="Models\ccinput\regyear.cs" />
+    <Compile Include="Models\ccinput\time.cs" />
+    <Compile Include="Models\ccinput\user.cs" />
+    <Compile Include="Models\ccinput\ward.cs" />
+    <Compile Include="Models\ccoutput\activity.cs" />
+    <Compile Include="Models\ccoutput\attendance.cs" />
+    <Compile Include="Models\ccoutput\casework.cs" />
+    <Compile Include="Models\ccoutput\ccoutput.cs" />
+    <Compile Include="Models\ccoutput\client.cs" />
+    <Compile Include="Models\ccoutput\need.cs" />
+    <Compile Include="Models\ccoutput\needsnote.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
