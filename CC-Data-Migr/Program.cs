@@ -32,18 +32,45 @@ namespace CC_Data_Migr
                 }
                 else
                 {
-                    // output the single record
+                    // output the single client record
                     C1client record = inputDB.C1client.Where(a => a.idClient == startClient).First();
                     ccoutput outputDB = new ccoutput();
                     openOutput(outputDB);
                     processClient(record,outputDB);
+                    // output any / all activities (services) for this client
+                    processActivities(inputDB, record, outputDB);
                 }
             }
             else
             {
                 // Output the whole dataset
             }
+            //
+            // end of main program
+            //
+            void processActivities (ccinput inputDB, C1client c, ccoutput o)
+            {
+                List <C1service> activities = inputDB.C1service.Where(a => a.idClient == c.idClient).ToList();
+                foreach (var item in activities)
+                {
+                    string unenrolleddate="";
+                    if (item.EndedDate != null)
+                    { unenrolleddate = item.EndedDate.ToString(); }
+                    //
+                    o.activities.Add(new activity
+                    {
+                        activityname = item.C1servicetypes.ServiceType,
+                        createdate = item.CreateDate.ToString("s"),
+                        enrolleddate = item.StartedDate.ToString("s"),
+                        idactivity = item.idService.ToString("000000"),
+                        idclient = item.idClient.ToString("000000"),
+                        UnenrolledDate= unenrolleddate
+                });
+                    o.SaveChangesAsync();
 
+                }
+
+            }
             void openOutput(ccoutput o)
             {
                 var table = o.clients.ToList();      // select all entried in the clients table
@@ -85,7 +112,7 @@ namespace CC_Data_Migr
                     { tennant_status = c.refdata10.RefCodeDesc; }
 
                     if(c.idClientPrev!=null)
-                    { idclientPrev = c.idClientPrev.ToString(); }
+                    { idclientPrev = c.idClientPrev.Value.ToString("00000"); }    // nullable types must be turned into it's value before formatting!
 
                     //
                     //
@@ -114,7 +141,7 @@ namespace CC_Data_Migr
                         housenumber=simple_unscramble(c.HouseNumber),
                         hearofservices_other=hear_other,
                         housingstatus=c.refdata9.RefCodeDesc,
-                        idclient=c.idClient.ToString(),
+                        idclient=c.idClient.ToString("000000"),
                         idclientprev=idclientPrev,
                         lastname=simple_unscramble(c.LastName),
                         occupation=c.refdata1.RefCodeDesc,
@@ -129,6 +156,7 @@ namespace CC_Data_Migr
                     
                         );
                     oo.SaveChangesAsync();
+
                 }
             }
             int determineStartClient(string[] array)

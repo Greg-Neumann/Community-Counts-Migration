@@ -11,7 +11,8 @@ namespace CC_Data_Migr.Models.ccoutput
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public int idactivity { get; set; }
+        [StringLength(6)]
+        public string idactivity { get; set; }
 
         [Column(TypeName = "char")]
         [Required]
@@ -24,16 +25,16 @@ namespace CC_Data_Migr.Models.ccoutput
 
         [Column(TypeName = "char")]
         [Required]
-        [StringLength(10)]
+        [StringLength(19)]
         public string createdate { get; set; }
 
         [Column(TypeName = "char")]
-        [StringLength(10)]
+        [StringLength(19)]
         public string UnenrolledDate { get; set; }
 
         [Column(TypeName = "char")]
         [Required]
-        [StringLength(10)]
+        [StringLength(19)]
         public string enrolleddate { get; set; }
     }
 }
