@@ -87,9 +87,8 @@ namespace CC_Data_Migr.Models.ccoutput
         [StringLength(45)]
         public string disability { get; set; }
 
-        [Column(TypeName = "char")]
         [Required]
-        [StringLength(1)]
+        [StringLength(45)]
         public string benefits { get; set; }
 
         [Required]
@@ -113,9 +112,8 @@ namespace CC_Data_Migr.Models.ccoutput
         [StringLength(19)]
         public string createddatetime { get; set; }
 
-        [Column(TypeName = "char")]
         [Required]
-        [StringLength(1)]
+        [StringLength(5)]
         public string signedbyclient { get; set; }
 
         [Required]
@@ -132,14 +130,12 @@ namespace CC_Data_Migr.Models.ccoutput
         [StringLength(45)]
         public string tenantstatus { get; set; }
 
-        [Column(TypeName = "char")]
         [Required]
-        [StringLength(1)]
+        [StringLength(5)]
         public string armedservicescurrently { get; set; }
 
-        [Column(TypeName = "char")]
         [Required]
-        [StringLength(1)]
+        [StringLength(5)]
         public string armedservicesprev { get; set; }
     }
 }
