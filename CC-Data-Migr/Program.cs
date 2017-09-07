@@ -40,13 +40,23 @@ namespace CC_Data_Migr
                     outputDB.Configuration.ValidateOnSaveEnabled = false; // fields are validated in program - do not let Entity framework do it as well
                     processClient(record,outputDB);
                     // output any / all activities (services) for this client
-                    
                     processAttendanceandAttendance(inputDB, record, outputDB);
                 }
             }
             else
             {
                 // Output the whole dataset
+                ccinput inputDB = new ccinput(); // open the input database for reading of it all
+                List<C1client> c1client = inputDB.C1client.Where(a=>a.idClient>1).ToList(); // idclient=1 is a system record
+                ccoutput outputDB = new ccoutput();
+                openOutput(outputDB);
+                outputDB.Configuration.AutoDetectChangesEnabled = false; // fields are validated in program - do not let Entity framework do it as well
+                outputDB.Configuration.ValidateOnSaveEnabled = false; // fields are validated in program - do not let Entity framework do it as well
+                foreach (var c in c1client)
+                {
+                    processClient(c, outputDB);
+                    processAttendanceandAttendance(inputDB, c, outputDB);
+                }
             }
             //
             // end of main program
@@ -96,9 +106,14 @@ namespace CC_Data_Migr
             }
             void openOutput(ccoutput o)
             {
-                var table = o.clients.ToList();      // select all entried in the clients table
+                var table = o.clients.ToList();      // select all entries in the clients table
                 var clear = o.clients.RemoveRange(table);
-                o.SaveChangesAsync();
+                o.SaveChanges();
+                var activities = o.activities.ToList();
+                var clearActivities = o.activities.RemoveRange(activities);
+                o.SaveChanges();
+                var attendances = o.attendances.ToList();
+                var clearAttendences = o.attendances.RemoveRange(attendances);
             }
             void processClient(C1client c, ccoutput o)
             {
@@ -178,7 +193,7 @@ namespace CC_Data_Migr
                     }
                     
                         );
-                    oo.SaveChangesAsync();
+                    oo.SaveChanges();
 
                 }
             }
