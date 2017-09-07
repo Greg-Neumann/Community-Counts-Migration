@@ -9,9 +9,8 @@ namespace CC_Data_Migr.Models.ccinput
     {
         public ccinput()
             : base("name=ccinput")
-        {
-        }
-
+        {}
+        
         public virtual DbSet<C1attendance> C1attendance { get; set; }
         public virtual DbSet<C1biometrics> C1biometrics { get; set; }
         public virtual DbSet<C1bookings> C1bookings { get; set; }
