@@ -29,12 +29,12 @@ namespace CC_Data_Migr.Models.ccoutput
 
         [Column(TypeName = "char")]
         [Required]
-        [StringLength(10)]
+        [StringLength(8)]
         public string sessiondate { get; set; }
 
         [Column(TypeName = "char")]
         [Required]
-        [StringLength(8)]
+        [StringLength(6)]
         public string sessiontime { get; set; }
 
         [Column(TypeName = "char")]
@@ -46,11 +46,11 @@ namespace CC_Data_Migr.Models.ccoutput
         public string attendedtime { get; set; }
 
         [Column(TypeName = "char")]
-        [StringLength(8)]
+        [StringLength(6)]
         public string signintime { get; set; }
 
         [Column(TypeName = "char")]
-        [StringLength(8)]
+        [StringLength(6)]
         public string signouttime { get; set; }
     }
 }

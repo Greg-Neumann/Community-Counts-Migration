@@ -36,9 +36,12 @@ namespace CC_Data_Migr
                     C1client record = inputDB.C1client.Where(a => a.idClient == startClient).First();
                     ccoutput outputDB = new ccoutput();
                     openOutput(outputDB);
+                    outputDB.Configuration.AutoDetectChangesEnabled = false; // fields are validated in program - do not let Entity framework do it as well
+                    outputDB.Configuration.ValidateOnSaveEnabled = false; // fields are validated in program - do not let Entity framework do it as well
                     processClient(record,outputDB);
                     // output any / all activities (services) for this client
-                    processActivities(inputDB, record, outputDB);
+                    
+                    processAttendanceandAttendance(inputDB, record, outputDB);
                 }
             }
             else
@@ -48,7 +51,8 @@ namespace CC_Data_Migr
             //
             // end of main program
             //
-            void processActivities (ccinput inputDB, C1client c, ccoutput o)
+            
+            void processAttendanceandAttendance(ccinput inputDB, C1client c, ccoutput o)
             {
                 List <C1service> activities = inputDB.C1service.Where(a => a.idClient == c.idClient).ToList();
                 foreach (var item in activities)
@@ -66,10 +70,29 @@ namespace CC_Data_Migr
                         idclient = item.idClient.ToString("000000"),
                         UnenrolledDate= unenrolleddate
                 });
-                    o.SaveChangesAsync();
+                    //
+                    // process all attendances for this activity and client
+                    //
+                    List<C1attendance> attendances = inputDB.C1attendance.Where(a => a.idServiceType == item.idServiceType).Where(a => a.idClient == item.idClient).ToList();
+                    foreach (var attendance in attendances)
+                    {
+                        o.attendances.Add(new attendance
+                        {
+                            activity = attendance.C1servicetypes.ServiceType,
+                            attendedcount = attendance.AttendedCount.ToString("00"),
+                            attendedtime = attendance.AttendedTime.ToString("hhmmss"),
+                            idattendance = attendance.idAttendance.ToString("000000"),
+                            idclient = attendance.idClient.ToString("000000"),
+                            resource = attendance.C1resources.ResourceName,
+                            sessiondate=attendance.SessionDate.ToString("yyyyMMdd"),
+                            sessiontime=attendance.SessionTime.ToString("hhmmss"),
+                            signintime=attendance.SignInTime.ToString("hhmmss"),
+                            signouttime=attendance.SignOutTime.ToString("hhmmss")
+                        });
 
+                    }
                 }
-
+                o.SaveChanges();
             }
             void openOutput(ccoutput o)
             {

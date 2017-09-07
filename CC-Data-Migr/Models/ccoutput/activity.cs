@@ -10,7 +10,6 @@ namespace CC_Data_Migr.Models.ccoutput
     public partial class activity
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [StringLength(6)]
         public string idactivity { get; set; }
 
