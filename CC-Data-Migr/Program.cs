@@ -52,10 +52,18 @@ namespace CC_Data_Migr
                 openOutput(outputDB);
                 outputDB.Configuration.AutoDetectChangesEnabled = false; // fields are validated in program - do not let Entity framework do it as well
                 outputDB.Configuration.ValidateOnSaveEnabled = false; // fields are validated in program - do not let Entity framework do it as well
+                //
+                // process indicator....
+                //
+                int counter = 0;
+                Console.WriteLine("processing all clients.");
                 foreach (var c in c1client)
                 {
                     processClient(c, outputDB);
                     processAttendanceandAttendance(inputDB, c, outputDB);
+                    counter++;
+                    if ((counter-1) % 100 ==0 )
+                    { Console.Write("."); }
                 }
             }
             //
@@ -83,8 +91,31 @@ namespace CC_Data_Migr
                     //
                     // process all attendances for this activity and client
                     //
-                    List<C1attendance> attendances = inputDB.C1attendance.Where(a => a.idServiceType == item.idServiceType).Where(a => a.idClient == item.idClient).ToList();
-                    foreach (var attendance in attendances)
+                    // if activity was unenrolled, then only pull off, this time round, the attendances upto and including the unenrolled date.
+                    // If they subsequently re-enroll, then we will pull of subsequent attendances for the subsequent activity re-enrollment
+                    // This precaustion is needed to avoid the same full set of attendances being pulled off for each activity and creating
+                    // articifical duplicates in the attendance file
+                    //
+                    List<C1attendance> attendances = new List<C1attendance>();
+                    if (item.EndedDate == null) // no re-enrollment - list all attendances
+                    {
+                        attendances = inputDB.C1attendance
+                           .Where(a => a.idServiceType == item.idServiceType)
+                           .Where(a => a.idClient == item.idClient)
+                           .Where(a => a.SessionDate >= item.StartedDate)
+                           .ToList();
+
+                    }
+                    else                                   // re-enrollment may exist - only list attendances up to date of unenrollment
+                    {
+                        attendances = inputDB.C1attendance
+                           .Where(a => a.idServiceType == item.idServiceType)
+                           .Where(a => a.idClient == item.idClient)
+                           .Where(a => a.SessionDate < item.EndedDate)
+                           .Where(a=>a.SessionDate >= item.StartedDate)
+                           .ToList();
+                    }
+                        foreach (var attendance in attendances)
                     {
                         o.attendances.Add(new attendance
                         {
@@ -114,6 +145,7 @@ namespace CC_Data_Migr
                 o.SaveChanges();
                 var attendances = o.attendances.ToList();
                 var clearAttendences = o.attendances.RemoveRange(attendances);
+                o.SaveChanges();
             }
             void processClient(C1client c, ccoutput o)
             {
@@ -124,7 +156,7 @@ namespace CC_Data_Migr
                 {
                     // field by field format of output record from given input record. Then write it.
                     // Deal with nullable fields first
-                    string addressLine2="", county="", phone="",email ="", ethnicity_other="", occupation_other="", hear_other="",tennant_status="",idclientPrev="";
+                    string addressLine2="", houseNumber="", county="", phone="",email ="", ethnicity_other="", occupation_other="", hear_other="",tennant_status="",idclientPrev="";
                     if (c.AddressLine2!=null)
                     { addressLine2 = simple_unscramble(c.AddressLine2); }
                     
@@ -148,6 +180,9 @@ namespace CC_Data_Migr
 
                     if(c.idTenantStatus!=null)
                     { tennant_status = c.refdata10.RefCodeDesc; }
+                    
+                    if(c.HouseNumber!=null)
+                    { houseNumber = simple_unscramble(c.HouseNumber); }
 
                     if(c.idClientPrev!=null)
                     { idclientPrev = c.idClientPrev.Value.ToString("00000"); }    // nullable types must be turned into it's value before formatting!
@@ -176,7 +211,7 @@ namespace CC_Data_Migr
                         firstname=simple_unscramble(c.FirstName),
                         gender=c.refdata3.RefCodeDesc,
                         hearofservices=c.refdata5.RefCodeDesc,
-                        housenumber=simple_unscramble(c.HouseNumber),
+                        housenumber=houseNumber,
                         hearofservices_other=hear_other,
                         housingstatus=c.refdata9.RefCodeDesc,
                         idclient=c.idClient.ToString("000000"),
