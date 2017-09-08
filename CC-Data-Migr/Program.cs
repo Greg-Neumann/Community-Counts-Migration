@@ -41,6 +41,7 @@ namespace CC_Data_Migr
                     processClient(record,outputDB);
                     // output any / all activities (services) for this client
                     processAttendanceandAttendance(inputDB, record, outputDB);
+                    processCasework(inputDB, record, outputDB);
                 }
             }
             else
@@ -61,6 +62,7 @@ namespace CC_Data_Migr
                 {
                     processClient(c, outputDB);
                     processAttendanceandAttendance(inputDB, c, outputDB);
+                    processCasework(inputDB, c, outputDB);
                     counter++;
                     if ((counter-1) % 100 ==0 )
                     { Console.Write("."); }
@@ -69,7 +71,39 @@ namespace CC_Data_Migr
             //
             // end of main program
             //
-            
+
+            void processCasework(ccinput inputDB, C1client c, ccoutput o)
+            {
+                
+                bool hasCasework = inputDB.C1clientcaseheader.Where(a => a.idClient == c.idClient).Any();
+                if (hasCasework)
+                {
+                    C1clientcaseheader caseid = inputDB.C1clientcaseheader.Where(a => a.idClient == c.idClient).First();
+                    List<C1clientcaseservice> caseservice = inputDB.C1clientcaseservice.Where(a => a.idClientCaseHeader == caseid.idClientCaseHeader).ToList();
+                    foreach (var service in caseservice)
+                    {
+                        List<C1clientcaseservicedetail> casedetail = inputDB.C1clientcaseservicedetail.Where(a => a.idClientCaseDetail == service.idClientCaseDetail).ToList();
+                        foreach (var caseworkdetail in casedetail)
+                        {
+                            string emailName = "";
+                            if  (caseworkdetail.user != null)
+                            { emailName = caseworkdetail.user.Email; }
+                            o.caseworks.Add(new casework
+                            {
+                                activity=service.C1servicetypes.ServiceType,
+                                date=caseworkdetail.CaseServiceDate.ToString("s"),
+                                idcasework=caseworkdetail.idClientCaseServiceDetail.ToString("000000"),
+                                notes=caseworkdetail.CaseServiceNotes,
+                                staff=emailName,
+                                time=caseworkdetail.CaseServiceTime.ToString("hhmm")
+                            }
+                            );
+                        }
+                    }
+                    
+                }
+                o.SaveChanges();
+            };
             void processAttendanceandAttendance(ccinput inputDB, C1client c, ccoutput o)
             {
                 List <C1service> activities = inputDB.C1service.Where(a => a.idClient == c.idClient).ToList();
