@@ -42,6 +42,7 @@ namespace CC_Data_Migr
                     // output any / all activities (services) for this client
                     processAttendanceandAttendance(inputDB, record, outputDB);
                     processCasework(inputDB, record, outputDB);
+                    processNeeds(inputDB, record, outputDB);
                 }
             }
             else
@@ -63,6 +64,7 @@ namespace CC_Data_Migr
                     processClient(c, outputDB);
                     processAttendanceandAttendance(inputDB, c, outputDB);
                     processCasework(inputDB, c, outputDB);
+                    processNeeds(inputDB, c, outputDB);
                     counter++;
                     if ((counter-1) % 100 ==0 )
                     { Console.Write("."); }
@@ -72,6 +74,42 @@ namespace CC_Data_Migr
             // end of main program
             //
 
+            void processNeeds(ccinput inputDB, C1client c, ccoutput o)
+            {
+                C1clientneedsheader header = inputDB.C1clientneedsheader.Where(a => a.idClient == c.idClient).First();
+                if ( header!=null)
+                {
+                    if (header.ClientNeedsNotes!=null  && header.ClientNeedsNotes!=String.Empty)       // suppress blank / non-existant notes
+                        o.needsnotes.Add(new needsnote
+                        {
+                            date = header.ClientNeedsDate.ToString("yyyyMMdd"),
+                            idclient = header.idClient.ToString("000000"),
+                            idneeds = header.idClientNeeds.ToString("000000"),
+                            notes = header.ClientNeedsNotes
+                        });
+                    //
+                    // Done Header (for the notes). Now need to process the detail records.
+                    //
+                    List<C1clientneedsdetail> details = inputDB.C1clientneedsdetail.Where(a => a.idClientNeeds == header.idClientNeeds).ToList();
+                    foreach (var items in details)
+
+                    {
+                        string needName = "";
+                        if (items.hasThisNeed)
+                        {
+                            needName = items.C1clientneedscat.Category;
+                            o.needs.Add(new need
+                            {
+                                idclient = header.idClient.ToString("000000"),
+                                idneeds = items.idClientNeedsDetail.ToString("000000"),
+                                needscategory = needName
+                            });
+
+                        }
+                    };
+                }
+                o.SaveChanges();
+            }
             void processCasework(ccinput inputDB, C1client c, ccoutput o)
             {
                 
@@ -179,6 +217,15 @@ namespace CC_Data_Migr
                 o.SaveChanges();
                 var attendances = o.attendances.ToList();
                 var clearAttendences = o.attendances.RemoveRange(attendances);
+                o.SaveChanges();
+                var casework = o.caseworks.ToList();
+                var clearCasework = o.caseworks.RemoveRange(casework);
+                o.SaveChanges();
+                var needs = o.needs.ToList();
+                var clearNeeds = o.needs.RemoveRange(needs);
+                o.SaveChanges();
+                var needNotes = o.needsnotes.ToList();
+                var clearNeedsNotes = o.needsnotes.RemoveRange(needNotes);
                 o.SaveChanges();
             }
             void processClient(C1client c, ccoutput o)

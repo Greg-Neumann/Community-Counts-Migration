@@ -21,7 +21,7 @@ namespace CC_Data_Migr.Models.ccoutput
 
         [Column(TypeName = "char")]
         [Required]
-        [StringLength(10)]
+        [StringLength(8)]
         public string date { get; set; }
 
         [StringLength(16777215)]
