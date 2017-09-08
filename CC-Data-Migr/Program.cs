@@ -76,9 +76,10 @@ namespace CC_Data_Migr
 
             void processNeeds(ccinput inputDB, C1client c, ccoutput o)
             {
-                C1clientneedsheader header = inputDB.C1clientneedsheader.Where(a => a.idClient == c.idClient).First();
-                if ( header!=null)
+                bool hasNeedHeader = inputDB.C1clientneedsheader.Where(a => a.idClient == c.idClient).Any();
+                if (hasNeedHeader) 
                 {
+                    C1clientneedsheader header = inputDB.C1clientneedsheader.Where(a => a.idClient == c.idClient).First();
                     if (header.ClientNeedsNotes!=null  && header.ClientNeedsNotes!=String.Empty)       // suppress blank / non-existant notes
                         o.needsnotes.Add(new needsnote
                         {
@@ -129,6 +130,7 @@ namespace CC_Data_Migr
                             o.caseworks.Add(new casework
                             {
                                 activity=service.C1servicetypes.ServiceType,
+                                idclient=caseid.idClient.ToString("000000"),
                                 date=caseworkdetail.CaseServiceDate.ToString("s"),
                                 idcasework=caseworkdetail.idClientCaseServiceDetail.ToString("000000"),
                                 notes=caseworkdetail.CaseServiceNotes,

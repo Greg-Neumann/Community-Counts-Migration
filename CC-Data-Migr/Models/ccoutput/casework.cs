@@ -14,6 +14,10 @@ namespace CC_Data_Migr.Models.ccoutput
         [StringLength(6)]
         public string idcasework { get; set; }
 
+        [Column(TypeName = "char")]
+        [StringLength(6)]
+        public string idclient { get; set; }
+
         [Required]
         [StringLength(45)]
         public string activity { get; set; }
