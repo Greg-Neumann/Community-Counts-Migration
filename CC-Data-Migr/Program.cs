@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Data;
-using System.Threading.Tasks;
-using CC_Data_Migr;
-using CC_Data_Migr.Models;
+using System.Text.RegularExpressions;
 using CC_Data_Migr.Models.ccinput;
 using CC_Data_Migr.Models.ccoutput;
 
@@ -86,7 +84,7 @@ namespace CC_Data_Migr
                             date = header.ClientNeedsDate.ToString("yyyyMMdd"),
                             idclient = header.idClient.ToString("000000"),
                             idneeds = header.idClientNeeds.ToString("000000"),
-                            notes = header.ClientNeedsNotes
+                            notes = CleanInput(header.ClientNeedsNotes)
                         });
                     //
                     // Done Header (for the notes). Now need to process the detail records.
@@ -133,7 +131,7 @@ namespace CC_Data_Migr
                                 idclient=caseid.idClient.ToString("000000"),
                                 date=caseworkdetail.CaseServiceDate.ToString("s"),
                                 idcasework=caseworkdetail.idClientCaseServiceDetail.ToString("000000"),
-                                notes=caseworkdetail.CaseServiceNotes,
+                                notes=CleanInput(caseworkdetail.CaseServiceNotes),
                                 staff=emailName,
                                 time=caseworkdetail.CaseServiceTime.ToString("hhmm")
                             }
@@ -390,6 +388,21 @@ namespace CC_Data_Migr
                 return o.ToString();
             }
             
+        }
+        static string CleanInput(string strIn)
+        {
+            // Replace invalid characters with empty strings.
+            try
+            {
+                return Regex.Replace(strIn, @"[^\w\.@-\\%\ ]", "",
+                                     RegexOptions.None, TimeSpan.FromSeconds(1.5));
+            }
+            // If we timeout when replacing invalid characters, 
+            // we should return Empty.
+            catch (RegexMatchTimeoutException)
+            {
+                return String.Empty;
+            }
         }
     }
 }
